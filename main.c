@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:14 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/19 16:52:18 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/19 18:16:32 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 	}
 }
 
-void	ft_close(t_cmd **lst)
+void	ft_close(t_cmd **lst, int last_pipe)
 {
 	(*lst) = (*lst)-> next;
 	while ((*lst)-> cmd)
@@ -48,13 +48,14 @@ void	ft_close(t_cmd **lst)
 		close((*lst)-> pipe_1);
 		(*lst) = (*lst)-> next;
 	}
+	(void)last_pipe;
 }
 
-void	ft_pipex(t_cmd **lst, char **env)
+void	ft_pipex(t_cmd **lst, char **env, int last_pipe)
 {
 	pid_t	pid;
 
-	(*lst) = (*lst)-> next;
+	printf("ft_pipex : cmd = %s\n", (*lst)-> cmd);
 	while ((*lst)-> cmd)
 	{
 		pid = fork();
@@ -74,7 +75,7 @@ void	ft_pipex(t_cmd **lst, char **env)
 			exit(1);
 		(*lst) = (*lst)-> next;
 	}
-	ft_close(lst);
+	ft_close(lst, last_pipe);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -83,6 +84,7 @@ int	main(int argc, char **argv, char **env)
 	int		outfile_fd;
 	char	*outfile;
 	t_cmd	*lst;
+	int		last_pipe[2];
 
 	lst = first_lst();
 	outfile = argv[argc - 1];
@@ -93,7 +95,7 @@ int	main(int argc, char **argv, char **env)
 	path_check(env, argv, argc);
 	decide_fd(&infile_fd, &outfile_fd, argv, outfile);
 	create_lst(argc, argv, env, &lst);
-	create_pipe(&lst, infile_fd, outfile_fd);
-	ft_pipex(&lst, env);
+	create_pipe(&lst, infile_fd, last_pipe[1]);
+	ft_pipex(&lst, env, last_pipe[0]);
 	exit(0);
 }

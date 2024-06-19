@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 02:00:57 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/19 16:50:49 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/19 18:16:15 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,12 @@ void	create_pipe(t_cmd **lst, int infile_fd, int outfile_fd)
 	int	i;
 
 	i = 0;
+	(*lst) = (*lst)-> next;
 	while ((*lst)-> cmd)
+	{
+		(*lst) = (*lst)-> next;
 		i++;
+	}
 	(*lst) = (*lst)-> next;
 	while (i > 1)
 	{
@@ -100,6 +104,7 @@ void	create_pipe(t_cmd **lst, int infile_fd, int outfile_fd)
 		(*lst)-> pipe_0 = pre_pipe[0];
 		(*lst)-> next -> pipe_1 = pre_pipe[1];
 		(*lst) = (*lst)-> next;
+		i--;
 	}
 	ft_to_first(lst);
 	(*lst)-> pre -> pipe_0 = outfile_fd;
