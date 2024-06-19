@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:40 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/19 03:07:33 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/19 16:50:58 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ typedef struct s_cmd
 	char			*cmd;
 	char			*path;
 	char			**arg;
+	int				pipe_0;
+	int				pipe_1;
 	struct s_cmd	*pre;
 }			t_cmd;
 
@@ -49,5 +51,6 @@ char	**ft_split(char const *s, char c);
 void	ft_free_bin(char **bin);
 char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
+void	create_pipe(t_cmd **lst, int infile_fd, int outfile_fd);
 
 #endif

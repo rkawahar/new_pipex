@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:14 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/19 04:09:22 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/19 16:52:18 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,30 +39,42 @@ void	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 	}
 }
 
-// void	lst_check(t_cmd **lst)
-// {
-// 	int	i;
-
-// 	(*lst) = (*lst)-> next;
-// 	while ((*lst)-> cmd)
-// 	{
-// 		ft_printf("---------------------------------------\n");
-// 		ft_printf("cmd = %s\n", (*lst)-> cmd);
-// 		ft_printf("path = %s\n", (*lst)-> path);
-// 		i = 0;
-// 		while ((*lst)-> arg[i])
-// 		{
-// 			ft_printf("arg[%d] = %s\n", i, (*lst)-> arg[i]);
-// 			i++;
-// 		}
-// 		ft_printf("---------------------------------------\n");
-// 		(*lst) = (*lst)-> next;
-// 	}
-// }
-
-void	ft_pipex(lst, infile_fd, env, outfile_fd)
+void	ft_close(t_cmd **lst)
 {
-	
+	(*lst) = (*lst)-> next;
+	while ((*lst)-> cmd)
+	{
+		close((*lst)-> pipe_0);
+		close((*lst)-> pipe_1);
+		(*lst) = (*lst)-> next;
+	}
+}
+
+void	ft_pipex(t_cmd **lst, char **env)
+{
+	pid_t	pid;
+
+	(*lst) = (*lst)-> next;
+	while ((*lst)-> cmd)
+	{
+		pid = fork();
+		if (pid == 0)
+			wait(NULL);
+		else if (pid == 0)
+		{
+			if (dup2((*lst)-> pipe_0, 0) || dup2((*lst)-> pipe_1, 1))
+				exit(1);
+			if (ft_strncmp((*lst)-> path, "nothing", 7) == 0)
+				exit(1);
+			if (execve((*lst)-> path, (*lst)-> arg, env) < 0)
+				exit(1);
+			exit(0);
+		}
+		else
+			exit(1);
+		(*lst) = (*lst)-> next;
+	}
+	ft_close(lst);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -81,7 +93,7 @@ int	main(int argc, char **argv, char **env)
 	path_check(env, argv, argc);
 	decide_fd(&infile_fd, &outfile_fd, argv, outfile);
 	create_lst(argc, argv, env, &lst);
-	// lst_check(&lst);
-	ft_pipex(lst, infile_fd, env, outfile_fd);
+	create_pipe(&lst, infile_fd, outfile_fd);
+	ft_pipex(&lst, env);
 	exit(0);
 }

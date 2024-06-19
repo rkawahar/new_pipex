@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 02:00:57 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/19 04:08:36 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/19 16:50:49 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ t_cmd	*first_lst(void)
 	nil -> cmd = NULL;
 	nil -> path = NULL;
 	nil -> arg = NULL;
+	nil -> pipe_0 = -1;
+	nil -> pipe_1 = -1;
 	nil -> pre = nil;
 	return (nil);
 }
@@ -81,4 +83,25 @@ void	create_lst(int argc, char **argv, char **env, t_cmd **lst)
 	}
 	ft_insert_info(lst, argc, argv, env);
 	(*lst) = (*lst)-> next -> next;
+}
+
+void	create_pipe(t_cmd **lst, int infile_fd, int outfile_fd)
+{
+	int	pre_pipe[2];
+	int	i;
+
+	i = 0;
+	while ((*lst)-> cmd)
+		i++;
+	(*lst) = (*lst)-> next;
+	while (i > 1)
+	{
+		pipe(pre_pipe);
+		(*lst)-> pipe_0 = pre_pipe[0];
+		(*lst)-> next -> pipe_1 = pre_pipe[1];
+		(*lst) = (*lst)-> next;
+	}
+	ft_to_first(lst);
+	(*lst)-> pre -> pipe_0 = outfile_fd;
+	(*lst)-> next -> pipe_1 = infile_fd;
 }

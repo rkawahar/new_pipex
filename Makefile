@@ -8,7 +8,9 @@ RM = rm -f
 
 all : $(NAME)
 
-$(NAME) : $(OBJS)
+
+$(NAME): $(OBJS)
+	$(CC) $(CFLGS) -o $@ $^
 
 %.o : %.c
 	$(CC) $(CFLGS) -c $^ -o $@
