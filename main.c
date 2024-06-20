@@ -6,11 +6,13 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:14 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/19 18:16:32 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/20 20:57:03 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+
 
 void	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 {
@@ -39,43 +41,27 @@ void	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 	}
 }
 
-void	ft_close(t_cmd **lst, int last_pipe)
-{
-	(*lst) = (*lst)-> next;
-	while ((*lst)-> cmd)
-	{
-		close((*lst)-> pipe_0);
-		close((*lst)-> pipe_1);
-		(*lst) = (*lst)-> next;
-	}
-	(void)last_pipe;
-}
-
-void	ft_pipex(t_cmd **lst, char **env, int last_pipe)
+void	ft_pipex(t_cmd *lst, char **env, int infile_fd, int outfile_fd)
 {
 	pid_t	pid;
+	int		pp[2];
 
-	printf("ft_pipex : cmd = %s\n", (*lst)-> cmd);
-	while ((*lst)-> cmd)
+	pipe(pp);
+	pid = fork();
+	if (pid > 0)
 	{
-		pid = fork();
-		if (pid == 0)
-			wait(NULL);
-		else if (pid == 0)
-		{
-			if (dup2((*lst)-> pipe_0, 0) || dup2((*lst)-> pipe_1, 1))
-				exit(1);
-			if (ft_strncmp((*lst)-> path, "nothing", 7) == 0)
-				exit(1);
-			if (execve((*lst)-> path, (*lst)-> arg, env) < 0)
-				exit(1);
-			exit(0);
-		}
-		else
-			exit(1);
-		(*lst) = (*lst)-> next;
+		ft_pipex(lst -> pre, env, pp[0], outfile_fd);
+		wait(NULL);
 	}
-	ft_close(lst, last_pipe);
+	else if (pid == 0)
+	{
+		if (dup2(infile_fd, 0) < 0 || dup2(pp[1], 1) < 0)
+			exit(1);
+		if (execve(lst -> path, lst -> arg, env) < 0)
+			exit(1);
+	}
+	close(infile_fd);
+	close(pp[1]);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -84,7 +70,6 @@ int	main(int argc, char **argv, char **env)
 	int		outfile_fd;
 	char	*outfile;
 	t_cmd	*lst;
-	int		last_pipe[2];
 
 	lst = first_lst();
 	outfile = argv[argc - 1];
@@ -95,7 +80,8 @@ int	main(int argc, char **argv, char **env)
 	path_check(env, argv, argc);
 	decide_fd(&infile_fd, &outfile_fd, argv, outfile);
 	create_lst(argc, argv, env, &lst);
-	create_pipe(&lst, infile_fd, last_pipe[1]);
-	ft_pipex(&lst, env, last_pipe[0]);
+	create_pipe(&lst, infile_fd, outfile_fd);
+	ft_to_first(&lst);
+	ft_pipex(lst -> pre, env, infile_fd, outfile_fd);
 	exit(0);
 }

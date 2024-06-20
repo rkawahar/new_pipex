@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 00:10:54 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/19 02:59:09 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/20 15:05:10 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ size_t	ft_strlen(const char *s)
 void	ft_to_first(t_cmd **lst)
 {
 	while ((*lst)-> cmd != NULL)
-		lst = &(*lst)-> next;
+		(*lst) = (*lst)-> next;
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)
