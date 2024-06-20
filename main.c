@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:14 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/20 20:57:03 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/20 22:05:51 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ void	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 {
 	int	infile_pipe[2];
 
-	(void)infile_pipe;
 	if (ft_strncmp(argv[1], "here_doc", 9) == 0)
 	{
 		*infile_fd = here_doc(argv[2]);
@@ -46,22 +45,32 @@ void	ft_pipex(t_cmd *lst, char **env, int infile_fd, int outfile_fd)
 	pid_t	pid;
 	int		pp[2];
 
-	pipe(pp);
-	pid = fork();
-	if (pid > 0)
+	if (lst -> pre -> cmd == NULL)
 	{
-		ft_pipex(lst -> pre, env, pp[0], outfile_fd);
-		wait(NULL);
+		dup2(infile_fd, 0);
+		dup2(outfile_fd, 1);
+		execve(lst -> path, lst -> arg, env);
 	}
-	else if (pid == 0)
+	else
 	{
-		if (dup2(infile_fd, 0) < 0 || dup2(pp[1], 1) < 0)
-			exit(1);
-		if (execve(lst -> path, lst -> arg, env) < 0)
+		pipe(pp);
+		pid = fork();
+		if (pid == 0)
+		{
+			ft_pipex(lst -> pre, env, infile_fd, pp[1]);
+			dup2(pp[0], 0);
+			dup2(outfile_fd, 1);
+			execve(lst -> path, lst -> arg, env);
+		}
+		else if (pid > 0)
+		{
+			wait(NULL);
+			close(pp[0]);
+			close(outfile_fd);
+		}
+		else
 			exit(1);
 	}
-	close(infile_fd);
-	close(pp[1]);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -80,7 +89,7 @@ int	main(int argc, char **argv, char **env)
 	path_check(env, argv, argc);
 	decide_fd(&infile_fd, &outfile_fd, argv, outfile);
 	create_lst(argc, argv, env, &lst);
-	create_pipe(&lst, infile_fd, outfile_fd);
+	// create_pipe(&lst, infile_fd, outfile_fd);
 	ft_to_first(&lst);
 	ft_pipex(lst -> pre, env, infile_fd, outfile_fd);
 	exit(0);
