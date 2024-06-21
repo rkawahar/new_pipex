@@ -6,7 +6,7 @@
 /*   By: kawaharadaryou <kawaharadaryou@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:14 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/21 21:07:59 by kawaharadar      ###   ########.fr       */
+/*   Updated: 2024/06/21 23:21:47 by kawaharadar      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,13 @@ void	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 {
 	int	infile_pipe[2];
 
-	if (ft_strncmp(argv[1], "here_doc", 9) == 0)
+	*infile_fd = open(argv[1], O_RDONLY);
+	if (ft_strncmp(argv[1], "here_doc\0", 9) == 0)
 	{
 		*infile_fd = here_doc(argv[2]);
 		*outfile_fd = open(outfile, O_CREAT | O_WRONLY | O_APPEND, 0000644);
 	}
-	else if (open(argv[1], O_RDONLY) == -1)
+	else if (*infile_fd < 0)
 	{
 		ft_printf("%s: ", argv[1]);
 		perror(NULL);
@@ -32,27 +33,60 @@ void	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 		*outfile_fd = open(outfile, O_CREAT | O_TRUNC | O_WRONLY, 0000644);
 	}
 	else
-	{
-		*infile_fd = open(argv[1], O_RDONLY);
 		*outfile_fd = open(outfile, O_CREAT | O_TRUNC | O_WRONLY, 0000644);
-	}
 }
 
-// void	ft_pipex(t_cmd *lst, char **env, int infile_fd, int outfile_fd)
-// {
+int	count_arg(t_cmd *lst)
+{
+	int	ans;
 
-// }
+	ans = 0;
+	ft_to_first(&lst);
+	lst = lst -> next;
+	while (lst -> cmd)
+	{
+		ans++;
+		lst = lst -> next;
+	}
+	return (ans);
+}
+
+void	ft_pipex(t_cmd *lst, char **env)
+{
+	pid_t	pid;
+	int		i;
+
+	while (lst -> cmd)
+	{
+		pid = fork();
+		if (pid == 0)
+		{
+			if (dup2(lst -> pipe_0, 0) < 0 || dup2(lst -> pipe_1, 1) < 0)
+				exit(1);
+			close(lst -> pipe_0);
+			execve(lst -> path, lst -> arg, env);
+		}
+		else if (pid > 0)
+		{
+			close(lst -> pipe_1);
+			if (lst -> next -> cmd == NULL)
+			{
+				i = count_arg(lst);
+				while (i-- > 0)
+					wait(NULL);
+			}
+		}
+		lst = lst -> next;
+	}
+}
 
 void	create_pipe(t_cmd **lst, int infile_fd, int outfile_fd)
 {
 	int	pre_pipe[2];
 
 	ft_to_first(lst);
-	printf("cmd = %s\n", (*lst)-> cmd);
 	(*lst)-> pre -> pipe_1 = outfile_fd;
 	(*lst)-> next -> pipe_0 = infile_fd;
-	printf("(*lst)-> pre -> pipe_1 = %d\n", (*lst)-> pre -> pipe_1);
-	printf("(*lst)-> next -> pipe_0 = %d\n", (*lst)-> next -> pipe_0);
 	(*lst) = (*lst)-> next;
 	while ((*lst)-> next -> cmd)
 	{
@@ -82,6 +116,6 @@ int	main(int argc, char **argv, char **env)
 	create_lst(argc, argv, env, &lst);
 	create_pipe(&lst, infile_fd, outfile_fd);
 	ft_to_first(&lst);
-	ft_pipex(lst -> pre, env, infile_fd, outfile_fd);
+	ft_pipex(lst -> next, env);
 	exit(0);
 }
