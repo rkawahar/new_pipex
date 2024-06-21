@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kawaharadaryou <kawaharadaryou@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:40 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/20 20:52:50 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/21 21:00:13 by kawaharadar      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ typedef struct s_cmd
 	char			*cmd;
 	char			*path;
 	char			**arg;
-	// int				pipe_0;
-	// int				pipe_1;
+	int				pipe_0;
+	int				pipe_1;
 	struct s_cmd	*pre;
 }			t_cmd;
 

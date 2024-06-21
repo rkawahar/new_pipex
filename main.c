@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kawaharadaryou <kawaharadaryou@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:14 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/20 22:05:51 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/21 21:07:59 by kawaharadar      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-
 
 void	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 {
@@ -40,37 +38,30 @@ void	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 	}
 }
 
-void	ft_pipex(t_cmd *lst, char **env, int infile_fd, int outfile_fd)
-{
-	pid_t	pid;
-	int		pp[2];
+// void	ft_pipex(t_cmd *lst, char **env, int infile_fd, int outfile_fd)
+// {
 
-	if (lst -> pre -> cmd == NULL)
+// }
+
+void	create_pipe(t_cmd **lst, int infile_fd, int outfile_fd)
+{
+	int	pre_pipe[2];
+
+	ft_to_first(lst);
+	printf("cmd = %s\n", (*lst)-> cmd);
+	(*lst)-> pre -> pipe_1 = outfile_fd;
+	(*lst)-> next -> pipe_0 = infile_fd;
+	printf("(*lst)-> pre -> pipe_1 = %d\n", (*lst)-> pre -> pipe_1);
+	printf("(*lst)-> next -> pipe_0 = %d\n", (*lst)-> next -> pipe_0);
+	(*lst) = (*lst)-> next;
+	while ((*lst)-> next -> cmd)
 	{
-		dup2(infile_fd, 0);
-		dup2(outfile_fd, 1);
-		execve(lst -> path, lst -> arg, env);
+		pipe(pre_pipe);
+		(*lst)-> pipe_1 = pre_pipe[1];
+		(*lst)-> next -> pipe_0 = pre_pipe[0];
+		(*lst) = (*lst)-> next;
 	}
-	else
-	{
-		pipe(pp);
-		pid = fork();
-		if (pid == 0)
-		{
-			ft_pipex(lst -> pre, env, infile_fd, pp[1]);
-			dup2(pp[0], 0);
-			dup2(outfile_fd, 1);
-			execve(lst -> path, lst -> arg, env);
-		}
-		else if (pid > 0)
-		{
-			wait(NULL);
-			close(pp[0]);
-			close(outfile_fd);
-		}
-		else
-			exit(1);
-	}
+		(*lst) = (*lst)-> next;
 }
 
 int	main(int argc, char **argv, char **env)
@@ -89,7 +80,7 @@ int	main(int argc, char **argv, char **env)
 	path_check(env, argv, argc);
 	decide_fd(&infile_fd, &outfile_fd, argv, outfile);
 	create_lst(argc, argv, env, &lst);
-	// create_pipe(&lst, infile_fd, outfile_fd);
+	create_pipe(&lst, infile_fd, outfile_fd);
 	ft_to_first(&lst);
 	ft_pipex(lst -> pre, env, infile_fd, outfile_fd);
 	exit(0);

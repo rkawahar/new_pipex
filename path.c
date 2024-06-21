@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kawaharadaryou <kawaharadaryou@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 02:10:47 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/19 03:08:17 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/21 20:42:39 by kawaharadar      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,6 @@ char	*ft_path(char *cmd, char **env)
 
 void	relative_path(t_cmd *lst, char **args, char **env)
 {
-	int	i;
-
-	i = 0;
 	lst -> arg = args;
 	lst -> cmd = args[0];
 	lst -> path = ft_path(lst -> cmd, env);
