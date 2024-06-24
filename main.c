@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:14 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/24 17:45:29 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/24 19:26:58 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,8 @@ int	main(int argc, char **argv, char **env)
 	ft_to_first(&lst);
 	if (flg == 1)
 	{
-		free(lst -> next -> path);
+		if (ft_strncmp(lst -> next -> path, "nothing\0", 8))
+			free(lst -> next -> path);
 		lst -> next -> path = "nothing\0";
 	}
 	ft_pipex(lst -> next, env);
