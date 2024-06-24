@@ -1,5 +1,5 @@
 SRCS = 	ft_print_specifier.c ft_printf.c ft_split.c here_doc.c list.c main.c path.c \
-path2.c pipex_utils.c 
+path2.c pipex_utils.c pipex_utils2.c
 NAME = pipex
 CC = cc
 CFLGS = -Wall -Wextra -Werror
