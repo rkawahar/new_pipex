@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 02:00:57 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/20 20:53:00 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/24 14:44:27 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ t_cmd	*first_lst(void)
 	nil -> cmd = NULL;
 	nil -> path = NULL;
 	nil -> arg = NULL;
-	// nil -> pipe_0 = -1;
-	// nil -> pipe_1 = -1;
+	nil -> pipe_0 = -1;
+	nil -> pipe_1 = -1;
 	nil -> pre = nil;
 	return (nil);
 }
