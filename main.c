@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:14 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/24 16:46:06 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/24 16:59:21 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,7 @@ int	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 	}
 	else if (*infile_fd < 0)
 	{
-		ft_printf("%s: ", argv[1]);
-		perror(NULL);
+		write_error(argv[1]);
 		if (pipe(infile_pipe) < 0)
 			perror(NULL);
 		close(infile_pipe[1]);
@@ -36,10 +35,7 @@ int	decide_fd(int *infile_fd, int *outfile_fd, char **argv, char *outfile)
 	else
 		*outfile_fd = open(outfile, O_CREAT | O_TRUNC | O_WRONLY, 0000644);
 	if (*outfile_fd < 0)
-	{
-		ft_printf("%s: ", argv[1]);
-		perror(NULL);
-	}
+		write_error(outfile);
 	return (0);
 }
 
@@ -61,7 +57,6 @@ int	count_arg(t_cmd *lst)
 void	ft_pipex(t_cmd *lst, char **env)
 {
 	pid_t	pid;
-	int		i;
 
 	while (lst -> cmd)
 	{
@@ -74,23 +69,9 @@ void	ft_pipex(t_cmd *lst, char **env)
 		}
 		pid = fork();
 		if (pid == 0)
-		{
-			if (dup2(lst -> pipe_0, 0) < 0 || dup2(lst -> pipe_1, 1) < 0)
-				exit(1);
-			close(lst -> pipe_0);
-			close(lst -> pipe_1);
-			execve(lst -> path, lst -> arg, env);
-		}
+			ft_children_prosess(lst, env);
 		else if (pid > 0)
-		{
-			close(lst -> pipe_1);
-			if (lst -> next -> cmd == NULL)
-			{
-				i = count_arg(lst);
-				while (i-- > 0)
-					wait(NULL);
-			}
-		}
+			ft_parent_prosses(lst);
 		lst = lst -> next;
 	}
 }

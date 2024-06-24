@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:40 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/24 15:24:00 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/24 17:00:34 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,8 @@ char	**ft_split(char const *s, char c);
 void	ft_free_bin(char **bin);
 char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
+void	write_error(char *str);
+void	ft_children_prosess(t_cmd *lst, char **env);
+void	ft_parent_prosses(t_cmd *lst);
 
 #endif
