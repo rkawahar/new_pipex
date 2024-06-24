@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 02:00:57 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/24 14:44:27 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/24 16:46:32 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	create_lst(int argc, char **argv, char **env, t_cmd **lst)
 	t_cmd	*tmp;
 	int		num;
 
-	if (ft_strncmp(argv[1], "fere_doc", 9) == 0)
+	if (ft_strncmp(argv[1], "here_doc\0", 9) == 0)
 		num = argc - 4;
 	else
 		num = argc - 3;
@@ -84,30 +84,3 @@ void	create_lst(int argc, char **argv, char **env, t_cmd **lst)
 	ft_insert_info(lst, argc, argv, env);
 	(*lst) = (*lst)-> next -> next;
 }
-
-// void	create_pipe(t_cmd **lst, int infile_fd, int outfile_fd)
-// {
-// 	int	pre_pipe[2];
-// 	int	i;
-
-// 	i = 0;
-// 	ft_to_first(lst);
-// 	(*lst) = (*lst)-> next;
-// 	while ((*lst)-> cmd)
-// 	{
-// 		i++;
-// 		(*lst) = (*lst)-> next;
-// 	}
-// 	(*lst) = (*lst)-> next;
-// 	while (i > 1)
-// 	{
-// 		pipe(pre_pipe);
-// 		(*lst)-> pipe_1 = pre_pipe[1];
-// 		(*lst)-> next -> pipe_0 = pre_pipe[0];
-// 		(*lst) = (*lst)-> next;
-// 		i--;
-// 	}
-// 	ft_to_first(lst);
-// 	(*lst)-> pre -> pipe_1 = outfile_fd;
-// 	(*lst)-> next -> pipe_0 = infile_fd;
-// }
