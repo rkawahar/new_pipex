@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:14 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/24 16:59:21 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/24 17:45:29 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,10 @@ int	main(int argc, char **argv, char **env)
 	create_pipe(&lst, infile_fd, outfile_fd);
 	ft_to_first(&lst);
 	if (flg == 1)
+	{
+		free(lst -> next -> path);
 		lst -> next -> path = "nothing\0";
+	}
 	ft_pipex(lst -> next, env);
 	exit(0);
 }
