@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 16:49:15 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/24 16:59:45 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/27 17:17:22 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,18 @@ void	ft_parent_prosses(t_cmd *lst)
 		while (i-- > 0)
 			wait(NULL);
 	}
+}
+
+int	check_sl(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '/')
+			return (1);
+		i++;
+	}
+	return (0);
 }

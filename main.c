@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 23:24:14 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/27 16:46:23 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/27 16:59:49 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,24 +76,7 @@ void	ft_pipex(t_cmd *lst, char **env)
 	}
 }
 
-void	create_pipe(t_cmd **lst, int infile_fd, int outfile_fd)
-{
-	int	pre_pipe[2];
-
-	ft_to_first(lst);
-	(*lst)-> pre -> pipe_1 = outfile_fd;
-	(*lst)-> next -> pipe_0 = infile_fd;
-	(*lst) = (*lst)-> next;
-	while ((*lst)-> next -> cmd)
-	{
-		pipe(pre_pipe);
-		(*lst)-> pipe_1 = pre_pipe[1];
-		(*lst)-> next -> pipe_0 = pre_pipe[0];
-		(*lst) = (*lst)-> next;
-	}
-}
-
-int	main(int argc, char **argv, char **env)
+void	main2(int argc, char **argv, char **env)
 {
 	int		infile_fd;
 	int		outfile_fd;
@@ -120,4 +103,14 @@ int	main(int argc, char **argv, char **env)
 	}
 	ft_pipex(lst -> next, env);
 	exit(0);
+}
+
+int	main(int argc, char **argv, char **env)
+{
+	if (argc < 5)
+	{
+		ft_printf("Fill in at least four variables\n");
+		exit(0);
+	}
+	main2(argc, argv, env);
 }

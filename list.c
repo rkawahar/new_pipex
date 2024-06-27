@@ -6,7 +6,7 @@
 /*   By: rkawahar <rkawahar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 02:00:57 by rkawahar          #+#    #+#             */
-/*   Updated: 2024/06/24 16:46:32 by rkawahar         ###   ########.fr       */
+/*   Updated: 2024/06/27 17:15:10 by rkawahar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	ft_insert_info(t_cmd **lst, int argc, char **argv, char **env)
 		args = ft_split(argv[i], ' ');
 		if (args == NULL)
 			exit(1);
-		if (access(args[0], F_OK) == 0)
+		if (access(args[0], F_OK) == 0 && check_sl(args[0]))
 			absolute_path(*lst, args);
 		else
 			relative_path(*lst, args, env);
@@ -83,4 +83,21 @@ void	create_lst(int argc, char **argv, char **env, t_cmd **lst)
 	}
 	ft_insert_info(lst, argc, argv, env);
 	(*lst) = (*lst)-> next -> next;
+}
+
+void	create_pipe(t_cmd **lst, int infile_fd, int outfile_fd)
+{
+	int	pre_pipe[2];
+
+	ft_to_first(lst);
+	(*lst)-> pre -> pipe_1 = outfile_fd;
+	(*lst)-> next -> pipe_0 = infile_fd;
+	(*lst) = (*lst)-> next;
+	while ((*lst)-> next -> cmd)
+	{
+		pipe(pre_pipe);
+		(*lst)-> pipe_1 = pre_pipe[1];
+		(*lst)-> next -> pipe_0 = pre_pipe[0];
+		(*lst) = (*lst)-> next;
+	}
 }
